@@ -11,7 +11,22 @@
                 <li><router-link to="/" class="hover:text-blue-300">Home</router-link></li>
                 <li><router-link to="/about" class="hover:text-blue-300">About</router-link></li>
                 <li><router-link to="/blogs" class="hover:text-blue-300">Blogs</router-link></li>
+                <li><router-link to="/shops" class="hover:text-blue-300">Shops</router-link></li>
                 <li><router-link to="/contact" class="hover:text-blue-300">Contact</router-link></li>
+                <li><router-link to="/cards" class="hover:text-blue-300">
+                        <p class="  relative"><font-awesome-icon icon="fa-solid fa-cart-shopping" />
+                            <span
+                                class="text-white flex justify-center items-center  font-medium -top-3 -right-2 absolute bg-red-500 h-[20px] w-[20px] rounded-full">{{
+                                    cart?.length }}
+                            </span>
+                        </p>
+                    </router-link></li>
+                <li><router-link v-if="!isLogin" to="/login" class="hover:text-blue-300">login</router-link></li>
+                <li>
+                    <div v-if="isLogin" @click="logout" class="hover:text-blue-300">logout</div>
+                </li>
+
+
             </ul>
 
             <!-- Mobile Menu Icon -->
@@ -42,11 +57,20 @@
 </template>
 
 <script>
+import { useCartStore } from '@/store/cart';
+import Cookies from 'js-cookie';
+import Swal from 'sweetalert2';
+
 export default {
     data() {
         return {
             isMobileMenuOpen: false,
         };
+    },
+    computed: {
+        cart() {
+            return this.cartStore.cart;
+        },
     },
     methods: {
         toggleMenu() {
@@ -55,6 +79,22 @@ export default {
         closeMenu() {
             this.isMobileMenuOpen = false;
         },
+        isLogin() {
+            const token = Cookies.get('auth_token');
+            return token ? true : false;
+        },
+        logout() {
+            Cookies.remove('auth_token');
+            Swal.fire('Success!', 'Logout successful.', 'success');
+            this.$router.push({ name: 'Home' });
+        }
     },
+    setup() {
+        const cartStore = useCartStore();
+        return { cartStore };
+    },
+
+
+
 };
 </script>
